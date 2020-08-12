@@ -46,7 +46,7 @@ cordova_app/platforms
 cordova_app/plugins
 cordova_app/www
 jspm_packages/
-
+android/
 # TypeScript v1 declaration files
 typings/
 

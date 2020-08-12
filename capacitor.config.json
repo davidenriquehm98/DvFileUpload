@@ -1,0 +1,13 @@
+{
+  "appId": "com.example.app",
+  "appName": "dv-file-upload",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "examples/dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
