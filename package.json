@@ -1,0 +1,51 @@
+{
+  "name": "dv-file-upload",
+  "version": "0.7.3",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.4.0",
+    "@vue/cli-plugin-eslint": "~4.4.0",
+    "@vue/cli-service": "~4.4.0",
+    "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
+    "dedent": "^0.7.0",
+    "dv-data-list": "git+https://github.com/davidenriquehm98/DvDataList.git",
+    "dv-switch": "git+https://github.com/davidenriquehm98/DvSwitch.git",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "stylus": "^0.54.8",
+    "stylus-loader": "^3.0.2",
+    "vue": "^2.6.11",
+    "vue-cli-plugin-vuetify": "^2.0.7",
+    "vue-clipboard2": "^0.3.1",
+    "vue-codemirror": "^4.0.6",
+    "vue-template-compiler": "^2.6.11",
+    "vuetify": "^1.5.18",
+    "vuetify-loader": "^1.5.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
