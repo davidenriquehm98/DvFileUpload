@@ -4,7 +4,7 @@ module.exports = {
   ],
   outputDir: 'examples/dist',
   publicPath: './',
-  // -----     android     -----
+  // -----     android cordova --deprecated for capacitor    -----
   // publicPath: 'file:///android_asset/www/dist/',
   pages: {
     index: {

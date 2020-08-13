@@ -42,7 +42,6 @@
   </v-container>
 </template>
 <script>
-import { Plugins } from '@capacitor/core';
 import { Api } from './API'
 import Example1 from './components/example1/index.vue'
 export default {
@@ -54,9 +53,6 @@ export default {
     return {
       data: [ ...Api ]
     }
-  },
-  mounted () {
-    console.log('Plugins', Plugins)
   }
 }
 </script>

@@ -192,6 +192,7 @@
 <script>
 import { Extenciones } from './utils/extenciones.js'
 import { defaultImages } from './utils/defaultImages.js'
+import { Plugins } from '@capacitor/core'
 export default {
   name: 'dv-file-upload',
   model: {
@@ -362,12 +363,19 @@ export default {
       reglas: [],
       fileMobile: [],
       uid: String(Math.floor(Math.random() * 1000)),
-      args: {
-        'selectMode': 100, // 101=picker image and video , 100=image , 102=video
-        'maxSelectCount': 50, // default 40 (Optional)
-        'maxSelectSize': 4194304 // 188743680=180M (Optional) only android
+      cameraOptions: {
+        // Whether to allow the user to crop or make small edits (platform specific)
+        allowEditing: true,
+        // Whether to automatically rotate the image "up" to correct for orientation in portrait mode Default: true
+        correctOrientation: true,
+        // The quality of image to return as JPEG, from 0-100
+        quality: 75,
+        // How the data should be returned. Currently, only 'Base64', 'DataUrl' or 'Uri' is supported
+        resultType: 'DataUrl',
+        // Whether to save the photo to the gallery. If the photo was picked from the gallery, it will only be saved if edited. Default: false
+        saveToGallery: true,
+        source: 'CAMERA'
       },
-      // files: [],
       verMenu: false, // bandera para el menu plegable version mobile
       imgError: defaultImages['error-file'],
       previewUrl: null,
@@ -388,17 +396,11 @@ export default {
     },
     previewSize () {
       this.size = this.previewSize ? this.previewSize : 50
-    },
-    maxMb () {
-      let mB = parseFloat(this.maxMb).toFixed(2)
-      this.args.maxSelectSize = mB.toString() !== 'NaN' ? (mB * 1048576) : 4194304
     }
   },
   created () {
     this.modelo = this.files
     this.reglas = this.rules
-    let mB = parseFloat(this.maxMb).toFixed(2)
-    this.args.maxSelectSize = mB.toString() !== 'NaN' ? (mB * 1048576) : 4194304
     if (this.required && this.rules.length === 0) {
       this.reglas = [
         v => !!v || 'Campo Requerido'
@@ -438,18 +440,10 @@ export default {
         return
       }
       if (!this.isMobile) {
-        if (this.platform !== 'web' && this.isCollections) {
-            this.agregarMobile()
-          } else {
-            this.seleccionarArchivo()
-          }
+        this.seleccionarArchivo()
       } else {
         if (this.verMenu) {
-          if (this.platform !== 'web' && this.isCollections) {
-            this.agregarMobile()
-          } else {
-            this.seleccionarArchivo()
-          }
+          this.seleccionarArchivo()
         } else {
           this.verMenu = true
         }
@@ -460,7 +454,9 @@ export default {
       document.getElementById(id.toString()).click()
     },
     focus () {
-      this.$refs.field.focus()
+      if (this.$refs.field) {
+        this.$refs.field.focus()
+      }
     },
     openMenu () {
       this.verMenu = true
@@ -481,43 +477,6 @@ export default {
         }
       }
       this.agregarListaImagen(archivo)
-    },
-    agregarMobile () {
-      this.fileMobile = []
-      this.$emit('input', this.modelo)
-      /* eslint-disable */
-      try {
-        MediaPicker.getMedias(this.args,
-          (medias) => {
-            this.getThumbnail(medias)
-          },
-          function (e) {
-            console.log(e)
-          })
-      } catch {
-        const mensajeError = 'Error al acceder a los Archivos, No se Encontró el Plugin de MediaPicker para ' + this.platform
-        this.$emit('error', mensajeError)
-        console.error('DvFileUpload- ', mensajeError)
-      }
-      /* eslint-enable */
-    },
-    getThumbnail (medias) {
-      for (let i = 0; i < medias.length; i++) {
-        // eslint-disable-next-line
-        MediaPicker.extractThumbnail(medias[i],
-          (data) => {
-            //  imgs[data.index].src = 'data:image/jpeg;base64,' + data.thumbnailBase64;
-            //  imgs[data.index].setAttribute('style', 'transform:rotate(' + data.exifRotate + 'deg)');
-            //  Usage example:
-            let file = this.dataURLtoFile('data:image/jpeg;base64,' + data.thumbnailBase64, data.name)
-            this.fileMobile.push(file)
-            this.agregarListaImagen(this.fileMobile)
-          },
-          function (e) {
-            console.log(e)
-          }
-        )
-      }
     },
     dataURLtoFile (dataurl, filename) {
       let arr = dataurl.split(',')
@@ -594,19 +553,22 @@ export default {
       this.$emit('input', this.modelo)
       this.$forceUpdate()
     },
-    usarCamara () {
-      if (navigator.camera) {
-        navigator.camera.getPicture(this.setPicture, this.error, {
-          // eslint-disable-next-line
-          destinationType: Camera.DestinationType.DATA_URL
-        })
+    async usarCamara () {
+      if (Plugins.Camera) {
+        try {
+          const cameraResult = await Plugins.Camera.getPhoto(this.cameraOptions)
+          console.log('cameraResult', cameraResult)
+          this.setPicture(cameraResult.dataUrl)
+        } catch (error) {
+          this.error(error)
+        }
       } else {
       // If the navigator.camera is not available display generic error to the user.
         this.error()
       }
     },
     setPicture (imagePath) {
-      let file = 'data:image/jpeg;base64,' + imagePath
+      let file = imagePath
       let dateObj = new Date()
       let name =
         dateObj.getYear().toString() +
