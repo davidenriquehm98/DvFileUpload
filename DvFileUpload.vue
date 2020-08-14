@@ -7,7 +7,7 @@
       align-center
       row
       wrap >
-      <v-flex v-if="useMenu" >
+      <v-flex v-if="hasPlugins" >
         <div class="text-xs-center uploadFileReference__menu-container" >
           <v-bottom-sheet
             v-model="verMenu"
@@ -269,10 +269,6 @@ export default {
       type: Boolean,
       default: false
     },
-    useMenu: {
-      type: Boolean,
-      default: false
-    },
     label: {
       type: String,
       default: 'Seleccione un Archivo'
@@ -449,7 +445,7 @@ export default {
       if (this.disabled) {
         return
       }
-      if (!this.useMenu) {
+      if (!this.hasPlugins) {
         this.seleccionarArchivo()
       } else {
         if (this.verMenu) {

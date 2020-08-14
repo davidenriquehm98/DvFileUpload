@@ -5,7 +5,6 @@
         v-if="!isButton"
         v-model="modelo"
         input-accept="image/*"
-        :use-menu="isMobile ? true : false"
         :is-collections="isMultiple ? true : false"
         :is-vertical="isVertical ? true : false" >
         <template slot="label" >
@@ -23,7 +22,7 @@
       <dv-file-upload-btn
         v-if="isButton"
         v-model="modelo"
-        :use-menu="isMobile ? true : false"
+        input-accept="image/*"
         :is-collections="isMultiple ? true : false" >
         <v-btn
           color="green"
@@ -45,14 +44,6 @@
         v-model="isButton"
         item_value="valor"
         :items="opcionesTipo"
-        @input="emitChange()" />
-      <dv-switch
-        small
-        label
-        color="green"
-        v-model="isMobile"
-        item_value="valor"
-        :items="opcionesMobile"
         @input="emitChange()" />
       <dv-switch
         small
@@ -108,18 +99,6 @@ export default {
           text_color: 'white'
         }
       ],
-      opcionesMobile: [
-        {
-          texto: 'Menú no',
-          valor: 0,
-          text_color: 'white'
-        },
-        {
-          texto: 'Menú si',
-          valor: 1,
-          text_color: 'white'
-        }
-      ],
       opcionesCantidad: [
         {
           texto: 'Archivo único',
@@ -140,11 +119,10 @@ export default {
     },
     getTemplate () {
       const singlePicker = dedent`<dv-file-upload
-        v-model="modelo" ${this.isMobile ? `
-        use-menu `: ''}${this.isMultiple ? `
-        is-collections `: ''}${this.plataforma !== 'web' ? `
-        platform="${this.plataforma}" `: ''}${this.isVertical ? `
-        is-vertical `: ''}>
+        v-model="modelo"${this.isMultiple ? `
+        is-collections `: ''}${this.isVertical ? `
+        is-vertical `: ''}
+        input-accept="image/*" >
         <template slot="label" >
           <span
             class="font-weight-bold green--text" >
@@ -158,10 +136,9 @@ export default {
         </template>
       </dv-file-upload>`
       const pickerButton = dedent`<dv-file-upload-btn
-        v-model="modelo" ${this.isMobile ? `
-        use-menu `: ''}${this.isMultiple ? `
-        is-collections `: ''}${this.plataforma !== 'web' ? `
-        platform="${this.plataforma}" `: ''}>
+        v-model="modelo"${this.isMultiple ? `
+        is-collections `: ''}
+        input-accept="image/*" >
         <v-btn
           color="green"
           class="white--text" >

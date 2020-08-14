@@ -69,10 +69,6 @@ export default {
       type: Boolean,
       default: false
     },
-    useMenu: {
-      type: Boolean,
-      default: false
-    },
     previewSize: {
       type: [Number, String],
       default: '50'
@@ -133,7 +129,7 @@ export default {
     },
     clickHandler () {
       this.$emit('click')
-      if (!this.useMenu) {
+      if (!this.hasPlugins) {
         this.seleccionarArchivo()
       } else {
         if (this.verMenu) {
