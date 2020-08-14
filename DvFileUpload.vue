@@ -435,7 +435,7 @@ export default {
       this.$forceUpdate()
     },
     setMiniatura (objMiniatura) {
-      console.log('set Min')
+      // console.log('set Min')
       this.descripcion = objMiniatura.name ? objMiniatura.name : ''
       this.previewUrl = objMiniatura.url ? objMiniatura.url : this.imgError
       this.$forceUpdate()
