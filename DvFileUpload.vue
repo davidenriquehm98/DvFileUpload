@@ -437,7 +437,7 @@ export default {
     setMiniatura (objMiniatura) {
       // console.log('set Min')
       this.descripcion = objMiniatura.name ? objMiniatura.name : ''
-      this.previewUrl = objMiniatura.url ? objMiniatura.url : this.imgError
+      this.previewUrl = objMiniatura.url ? objMiniatura.url : this.img64Default
       this.$forceUpdate()
     },
     clickHandler () {
