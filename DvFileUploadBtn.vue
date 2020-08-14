@@ -16,8 +16,9 @@
           Opciones
         </v-subheader>
         <v-list-tile
-          v-if="platform !== 'web'"
-          class="dv-fub__list-tile" >
+          v-if="hasPlugins"
+          class="dv-fub__list-tile"
+          @click="usarCamara()" >
           <v-list-tile-avatar>
             <v-avatar size="32px" >
               <v-icon color="blue" >
@@ -25,12 +26,13 @@
               </v-icon>
             </v-avatar>
           </v-list-tile-avatar>
-          <v-list-tile-title @click="usarCamara()" >
+          <v-list-tile-title>
             Camara
           </v-list-tile-title>
         </v-list-tile>
         <v-list-tile
-          class="uploadFileReference__list-tile" >
+          class="uploadFileReference__list-tile"
+          @click="clickHandler()" >
           <v-list-tile-avatar>
             <v-avatar size="32px" >
               <v-icon color="blue" >
@@ -38,7 +40,7 @@
               </v-icon>
             </v-avatar>
           </v-list-tile-avatar>
-          <v-list-tile-title @click="clickHandler()" >
+          <v-list-tile-title>
             Galeria
           </v-list-tile-title>
         </v-list-tile>
@@ -67,13 +69,9 @@ export default {
       type: Boolean,
       default: false
     },
-    isMobile: {
+    useMenu: {
       type: Boolean,
       default: false
-    },
-    platform: {
-      type: String,
-      default: 'web'
     },
     previewSize: {
       type: [Number, String],
@@ -87,6 +85,7 @@ export default {
   data () {
     return {
       modelo: [],
+      hasPlugins: true,
       uid: String(Math.floor(Math.random() * 1000)),
       cameraOptions: {
         // Whether to allow the user to crop or make small edits (platform specific)
@@ -117,14 +116,24 @@ export default {
     }
   },
   created () {
+    this.checkPlatform()
     this.modelo = this.files
     this.img64Default = defaultImages[this.imgDefault]
     this.previewUrl = this.img64Default
   },
   methods: {
+    async checkPlatform () {
+      const { Device } = Plugins;
+      const info = await Device.getInfo();
+      if (info.platform === 'web') {
+        this.hasPlugins = false
+      } else {
+        this.hasPlugins = true
+      }
+    },
     clickHandler () {
       this.$emit('click')
-      if (!this.isMobile) {
+      if (!this.useMenu) {
         this.seleccionarArchivo()
       } else {
         if (this.verMenu) {
@@ -272,7 +281,7 @@ export default {
         });
     },
     error (error) {
-      const mensajeError = 'Error al capturar la fotografía, ' + (error != null ? error : ('No se Encontró el Plugin de Camará para ' + this.platform))
+      const mensajeError = 'Error al capturar la fotografía, ' + (error != null ? error : ('No se Encontró el Plugin de Camará'))
       this.$emit('error', mensajeError)
       console.error('DvFileUploadBtn- ', mensajeError)
     },

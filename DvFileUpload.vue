@@ -7,7 +7,7 @@
       align-center
       row
       wrap >
-      <v-flex v-if="isMobile" >
+      <v-flex v-if="useMenu" >
         <div class="text-xs-center uploadFileReference__menu-container" >
           <v-bottom-sheet
             v-model="verMenu"
@@ -17,8 +17,9 @@
                 Opciones
               </v-subheader>
               <v-list-tile
-                v-if="platform !== 'web'"
-                 class="uploadFileReference__list-tile" >
+                v-if="hasPlugins"
+                class="uploadFileReference__list-tile"
+                @click="usarCamara()" >
                 <v-list-tile-avatar>
                   <v-avatar size="32px" >
                     <v-icon color="blue" >
@@ -26,12 +27,13 @@
                     </v-icon>
                   </v-avatar>
                 </v-list-tile-avatar>
-                <v-list-tile-title @click="usarCamara()" >
+                <v-list-tile-title >
                   Camara
                 </v-list-tile-title>
               </v-list-tile>
               <v-list-tile
-                class="uploadFileReference__list-tile" >
+                class="uploadFileReference__list-tile"
+                @click="clickHandler()" >
                 <v-list-tile-avatar>
                   <v-avatar size="32px" >
                     <v-icon color="blue" >
@@ -39,7 +41,8 @@
                     </v-icon>
                   </v-avatar>
                 </v-list-tile-avatar>
-                <v-list-tile-title @click="clickHandler()" >
+                <v-list-tile-title
+                  style="cursor:pointer;" >
                   Galeria
                 </v-list-tile-title>
               </v-list-tile>
@@ -266,7 +269,7 @@ export default {
       type: Boolean,
       default: false
     },
-    isMobile: {
+    useMenu: {
       type: Boolean,
       default: false
     },
@@ -289,10 +292,6 @@ export default {
     placeholder: {
       type: String,
       default: ' '
-    },
-    platform: {
-      type: String,
-      default: 'web'
     },
     prefix: {
       type: String,
@@ -359,6 +358,7 @@ export default {
     return {
       verMiniatura: true,
       verMultipleCards: false,
+      hasPlugins: true,
       modelo: [],
       reglas: [],
       fileMobile: [],
@@ -398,7 +398,8 @@ export default {
       this.size = this.previewSize ? this.previewSize : 50
     }
   },
-  created () {
+  async created () {
+    this.checkPlatform()
     this.modelo = this.files
     this.reglas = this.rules
     if (this.required && this.rules.length === 0) {
@@ -413,6 +414,15 @@ export default {
     this.previewHandler()
   },
   methods: {
+    async checkPlatform () {
+      const { Device } = Plugins;
+      const info = await Device.getInfo();
+      if (info.platform === 'web') {
+        this.hasPlugins = false
+      } else {
+        this.hasPlugins = true
+      }
+    },
     previewHandler () {
       if (this.modelo != null && (this.modelo.url != null || (this.modelo.length && this.modelo.length === 1))) {
         this.verMiniatura = true
@@ -439,7 +449,7 @@ export default {
       if (this.disabled) {
         return
       }
-      if (!this.isMobile) {
+      if (!this.useMenu) {
         this.seleccionarArchivo()
       } else {
         if (this.verMenu) {
@@ -598,7 +608,7 @@ export default {
         });
     },
     error (error) {
-      const mensajeError = 'Error al capturar la fotografía, ' + (error != null ? error : ('No se Encontró el Plugin de Camará para ' + this.platform))
+      const mensajeError = 'Error al capturar la fotografía, ' + (error != null ? error : ('No se Encontró el Plugin de Camará '))
       this.$emit('error', mensajeError)
       console.error('DvFileUploadBtn- ', mensajeError)
     },

@@ -5,8 +5,7 @@
         v-if="!isButton"
         v-model="modelo"
         input-accept="image/*"
-        :is-mobile="isMobile ? true : false"
-        :platform="plataforma"
+        :use-menu="isMobile ? true : false"
         :is-collections="isMultiple ? true : false"
         :is-vertical="isVertical ? true : false" >
         <template slot="label" >
@@ -24,8 +23,7 @@
       <dv-file-upload-btn
         v-if="isButton"
         v-model="modelo"
-        :platform="plataforma"
-        :is-mobile="isMobile ? true : false"
+        :use-menu="isMobile ? true : false"
         :is-collections="isMultiple ? true : false" >
         <v-btn
           color="green"
@@ -65,14 +63,6 @@
         :items="opcionesCantidad"
         @input="emitChange()" />
       <dv-switch
-        small
-        label
-        color="brown"
-        v-model="plataforma"
-        item_value="valor"
-        :items="opcionesPlataforma"
-        @input="emitChange()" />
-      <dv-switch
         v-if="!isButton"
         small
         label
@@ -93,7 +83,6 @@ export default {
       isMobile: 0,
       isAndroid: 0,
       isMultiple: 0,
-      plataforma: 'web',
       isVertical: 0,
       opcionesTipo: [
         {
@@ -121,12 +110,12 @@ export default {
       ],
       opcionesMobile: [
         {
-          texto: 'Desktop',
+          texto: 'Menú no',
           valor: 0,
           text_color: 'white'
         },
         {
-          texto: 'Mobile',
+          texto: 'Menú si',
           valor: 1,
           text_color: 'white'
         }
@@ -142,18 +131,6 @@ export default {
           valor: 1,
           text_color: 'white'
         }
-      ],
-      opcionesPlataforma: [
-        {
-          texto: 'Web',
-          valor: 'web',
-          text_color: 'white'
-        },
-        {
-          texto: 'Android/iOS',
-          valor: 'android',
-          text_color: 'white'
-        }
       ]
     }
   },
@@ -164,7 +141,7 @@ export default {
     getTemplate () {
       const singlePicker = dedent`<dv-file-upload
         v-model="modelo" ${this.isMobile ? `
-        is-mobile `: ''}${this.isMultiple ? `
+        use-menu `: ''}${this.isMultiple ? `
         is-collections `: ''}${this.plataforma !== 'web' ? `
         platform="${this.plataforma}" `: ''}${this.isVertical ? `
         is-vertical `: ''}>
@@ -182,7 +159,7 @@ export default {
       </dv-file-upload>`
       const pickerButton = dedent`<dv-file-upload-btn
         v-model="modelo" ${this.isMobile ? `
-        is-mobile `: ''}${this.isMultiple ? `
+        use-menu `: ''}${this.isMultiple ? `
         is-collections `: ''}${this.plataforma !== 'web' ? `
         platform="${this.plataforma}" `: ''}>
         <v-btn

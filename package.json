@@ -1,17 +1,18 @@
 {
   "name": "dv-file-upload",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@capacitor/core": "^2.4.0"
+  },
   "devDependencies": {
     "@capacitor/android": "^2.4.0",
     "@capacitor/cli": "^2.4.0",
-    "@capacitor/core": "^2.4.0",
     "@vue/cli-plugin-babel": "~4.4.0",
     "@vue/cli-plugin-eslint": "~4.4.0",
     "@vue/cli-service": "~4.4.0",
