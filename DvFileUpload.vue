@@ -636,4 +636,7 @@ export default {
 .fileUp.v-input div.v-input__control  {
   align-self: center;
 }
+.fileUp.v-input div.v-input__control div.v-input__slot div.v-text-field__slot input {
+  cursor: pointer;
+}
 </style>
