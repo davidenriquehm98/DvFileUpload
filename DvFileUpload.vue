@@ -480,6 +480,11 @@ export default {
         this.$refs.field.focus()
       }
     },
+    resetValidation () {
+      if (this.$refs.field) {
+        this.$refs.field.resetValidation()
+      }
+    },
     openMenu () {
       this.verMenu = true
     },
@@ -640,6 +645,7 @@ export default {
       this.$emit('clear')
       let obj = { name: null, url: urlImg ? urlImg : this.img64Default, isCleared: true }
       this.modelo = obj
+      this.resetValidation()
       this.$emit('input', this.modelo)
     }
   }
