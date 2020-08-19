@@ -100,7 +100,7 @@
           :solo-inverted="soloInverted"
           :suffix="suffix"
           readonly
-          class="ml-3 fileUp"
+          class="fileUp"
           style="cursor:pointer;"
           @click="clickHandler()" >
           <template slot="label" >
