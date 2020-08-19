@@ -392,6 +392,22 @@ export default {
     },
     previewSize () {
       this.size = this.previewSize ? this.previewSize : 50
+    },
+    rules: {
+      handler () {
+        let reglaRequired = [v => !!v || 'Campo Requerido']
+        this.reglas = this.rules
+        if (this.required) {
+          this.reglas = [
+            ...this.rules,
+            ...reglaRequired
+          ]
+        } else {
+          this.reglas = [
+            ...this.rules
+          ]          
+        }
+      }
     }
   },
   async created () {
