@@ -5,6 +5,7 @@
       ref="uploadFileReference"
       :id="'uploadFileReference' + uid"
       :multiple="(isCollections) ? true : false"
+      :accept="inputAccept"
       type="file"
       style="display: none"
       @change="buscarImagenes" >
@@ -76,6 +77,10 @@ export default {
     maxMb: {
       type: [Number, String],
       default: 4
+    },
+    inputAccept: {
+      type: String,
+      default: '*'
     }
   },
   data () {
