@@ -99,6 +99,7 @@
           :solo="solo"
           :solo-inverted="soloInverted"
           :suffix="suffix"
+          validate-on-blur
           readonly
           class="fileUp"
           style="cursor:pointer;"
