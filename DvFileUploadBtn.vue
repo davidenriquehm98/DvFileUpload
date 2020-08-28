@@ -133,7 +133,9 @@ export default {
         const mensajeTipoError = `Archivo de tipo ${archivo.type} no es aceptado por ${me.inputAccept}.`
         me.$emit('error', mensajeTipoError)
         console.error(`DvFileUpload-${mensajeTipoError}`)
-        me.limpiar(defaultImages['error-file'])
+        if (!me.isCollections) {
+          me.limpiar(defaultImages['error-file'])
+        }
         resolve(false)
       }
       resolve(true)
@@ -145,7 +147,9 @@ export default {
         const mensajeError = 'No se puede subir el archivo, ha excedido el limite de ' + maxPermitido + ' mb.'
         me.$emit('error', mensajeError)
         console.error('DvFileUpload-', mensajeError)
-        me.limpiar(defaultImages['error-file'])
+        if (!me.isCollections) {
+          me.limpiar(defaultImages['error-file'])
+        }
         resolve(false)
       }
       resolve(true)
@@ -225,31 +229,29 @@ export default {
         for (let i = 0; i < tamanio; i++) {
           let tipoValido = false
           tipoValido = await this.checkTipoArchivo(this, archivo[i])
-          if (!tipoValido) {
-            break
-          }
-          let pesoValido = false
-          pesoValido = await this.checkMaxMb(this, archivo[i])
-          if (!pesoValido) {
-            break
-          }
-          const nombreNormal = this.normalizarNombre(archivo[i].name)
-          let objMod = {}
-          objMod.name = nombreNormal
-          objMod.isNew = true
-          objMod.archivo = archivo[i]
-          let ex = this.getExtension(archivo[i].name)
-          ex = ex.toLowerCase()
-          if (ex !== 'jpg' && ex !== 'icon' && ex !== 'jpeg' && ex !== 'png' && ex !== 'gif') {
-            if (Extenciones[ex] != null) {
-              objMod.url = Extenciones[ex]
-            } else {
-              objMod.url = Extenciones['null']
+          if (tipoValido) {
+            let pesoValido = false
+            pesoValido = await this.checkMaxMb(this, archivo[i])
+            if (pesoValido) {
+              const nombreNormal = this.normalizarNombre(archivo[i].name)
+              let objMod = {}
+              objMod.name = nombreNormal
+              objMod.isNew = true
+              objMod.archivo = archivo[i]
+              let ex = this.getExtension(archivo[i].name)
+              ex = ex.toLowerCase()
+              if (ex !== 'jpg' && ex !== 'icon' && ex !== 'jpeg' && ex !== 'png' && ex !== 'gif') {
+                if (Extenciones[ex] != null) {
+                  objMod.url = Extenciones[ex]
+                } else {
+                  objMod.url = Extenciones['null']
+                }
+              } else {
+                objMod.url = URL.createObjectURL(archivo[i])
+              }
+              this.modelo.push(objMod)
             }
-          } else {
-            objMod.url = URL.createObjectURL(archivo[i])
           }
-          this.modelo.push(objMod)
           if (i === tamanio - 1) {
             this.$emit('input', this.modelo)
           }
