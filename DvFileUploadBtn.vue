@@ -218,8 +218,21 @@ export default {
           if (!pesoValido) {
             break
           }
+          //se quita cualquier caracter especial que pueda tener el nombre de la imagen
+          let nombreTmp = archivo[i].name
+          nombreTmp = nombreTmp.replace(/æ/g, 'ae');
+          nombreTmp = nombreTmp.replace(/œ/g, 'oe');
+          nombreTmp = nombreTmp.replace(/ñ/g, 'n');
+          nombreTmp = nombreTmp.replace(/Ñ/g, 'N');
+          nombreTmp = nombreTmp.replace(/ü/g, 'u');
+          nombreTmp = nombreTmp.replace(/Ü/g, 'U');
+          nombreTmp = nombreTmp.replace(/ /g, '_');
+          nombreTmp = nombreTmp.replace(/#/g, '');
+          nombreTmp = nombreTmp.replace(/%/g, '');
+          const nombreNormal = nombreTmp.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
           let objMod = {}
-          objMod.name = archivo[i].name
+          archivo[i].name = nombreNormal
+          objMod.name = nombreNormal
           objMod.isNew = true
           objMod.archivo = archivo[i]
           let ex = this.getExtension(archivo[i].name)
