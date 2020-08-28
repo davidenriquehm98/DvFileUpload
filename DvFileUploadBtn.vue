@@ -150,6 +150,21 @@ export default {
       }
       resolve(true)
     }),
+    normalizarNombre (name) {
+      //se quita cualquier caracter especial que pueda tener el nombre de la imagen
+      let nombreTmp = name
+      nombreTmp = nombreTmp.replace(/æ/g, 'ae');
+      nombreTmp = nombreTmp.replace(/œ/g, 'oe');
+      nombreTmp = nombreTmp.replace(/ñ/g, 'n');
+      nombreTmp = nombreTmp.replace(/Ñ/g, 'N');
+      nombreTmp = nombreTmp.replace(/ü/g, 'u');
+      nombreTmp = nombreTmp.replace(/Ü/g, 'U');
+      nombreTmp = nombreTmp.replace(/ /g, '_');
+      nombreTmp = nombreTmp.replace(/#/g, '');
+      nombreTmp = nombreTmp.replace(/%/g, '');
+      const nombreNormal = nombreTmp.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return nombreNormal
+    },
     async checkPlatform () {
       const { Device } = Plugins;
       const info = await Device.getInfo();
@@ -218,20 +233,8 @@ export default {
           if (!pesoValido) {
             break
           }
-          //se quita cualquier caracter especial que pueda tener el nombre de la imagen
-          let nombreTmp = archivo[i].name
-          nombreTmp = nombreTmp.replace(/æ/g, 'ae');
-          nombreTmp = nombreTmp.replace(/œ/g, 'oe');
-          nombreTmp = nombreTmp.replace(/ñ/g, 'n');
-          nombreTmp = nombreTmp.replace(/Ñ/g, 'N');
-          nombreTmp = nombreTmp.replace(/ü/g, 'u');
-          nombreTmp = nombreTmp.replace(/Ü/g, 'U');
-          nombreTmp = nombreTmp.replace(/ /g, '_');
-          nombreTmp = nombreTmp.replace(/#/g, '');
-          nombreTmp = nombreTmp.replace(/%/g, '');
-          const nombreNormal = nombreTmp.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          const nombreNormal = this.normalizarNombre(archivo[i].name)
           let objMod = {}
-          archivo[i].name = nombreNormal
           objMod.name = nombreNormal
           objMod.isNew = true
           objMod.archivo = archivo[i]
@@ -262,8 +265,9 @@ export default {
         if (!pesoValidoSingle) {
           return
         }
+        const nombreNormal = this.normalizarNombre(archivo[0].name)
         const objModelo = {}
-        objModelo.name = archivo[0].name
+        objModelo.name = nombreNormal
         objModelo.isNew = true
         objModelo.archivo = archivo[0]
         let ex = this.getExtension(archivo[0].name)
