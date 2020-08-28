@@ -414,11 +414,17 @@ export default {
   async created () {
     this.checkPlatform()
     this.modelo = this.files
+    let reglaRequired = [v => !!v || 'Campo Requerido']
     this.reglas = this.rules
-    if (this.required && this.rules.length === 0) {
+    if (this.required) {
       this.reglas = [
-        v => !!v || 'Campo Requerido'
+        ...this.rules,
+        ...reglaRequired
       ]
+    } else {
+      this.reglas = [
+        ...this.rules
+      ]          
     }
     this.img64Default = defaultImages[this.imgDefault]
     this.previewUrl = this.img64Default
@@ -427,6 +433,28 @@ export default {
     this.previewHandler()
   },
   methods: {
+    checkTipoArchivo: (me, archivo) => new Promise(resolve => {
+      if (me.inputAccept != null && me.inputAccept !== '*' && !archivo.type.match(me.inputAccept)) {
+        const mensajeTipoError = `Archivo de tipo ${archivo.type} no es aceptado por ${me.inputAccept}.`
+        me.$emit('error', mensajeTipoError)
+        console.error(`DvFileUpload-${mensajeTipoError}`)
+        me.limpiar(defaultImages['error-file'])
+        resolve(false)
+      }
+      resolve(true)
+    }),
+    checkMaxMb: (me, archivo) => new Promise(resolve => {
+      const mbFile = archivo.size / 1024 / 1024
+      const maxPermitido = me.maxMb ? me.maxMb : 5
+      if (mbFile > maxPermitido) {
+        const mensajeError = 'No se puede subir el archivo, ha excedido el limite de ' + maxPermitido + ' mb.'
+        me.$emit('error', mensajeError)
+        console.error('DvFileUpload-', mensajeError)
+        me.limpiar(defaultImages['error-file'])
+        resolve(false)
+      }
+      resolve(true)
+    }),
     async checkPlatform () {
       const { Device } = Plugins;
       const info = await Device.getInfo();
@@ -490,20 +518,7 @@ export default {
       this.verMenu = true
     },
     buscarImagenes (event) {
-      this.modelo = []                      
-      this.$emit('input', this.modelo)
-      let archivo = event.target.files || event.dataTransfer.files
-      let tamanio = archivo.length
-      for (let i = 0; i < tamanio; i++) {
-        let mbFile = archivo[i].size / 1024 / 1024
-        if (mbFile > this.maxMb) {
-          const mensajeError = 'No se puede subir el archivo, ha excedido el limite de ' + this.maxMb + ' mb.'
-          this.$emit('error', mensajeError)
-          console.error('DvFileUpload - ', mensajeError)
-          this.limpiar(defaultImages['error-file'])
-          return
-        }
-      }
+      const archivo = event.target.files || event.dataTransfer.files
       this.agregarListaImagen(archivo)
     },
     dataURLtoFile (dataurl, filename) {
@@ -519,25 +534,34 @@ export default {
       myBlob.name = filename
       return myBlob
     },
-    agregarListaImagen (archivo) {
+    async agregarListaImagen (archivo) {
       this.verMenu = false
       if (!archivo.length) {
         this.limpiar()
         return
       }
       if (this.isCollections) {
-        this.limpiar()
         let tamanio = archivo.length
         if (tamanio > 1) {
           this.descripcion = tamanio + ' Archivos Adjuntos'
         }
         this.modelo = []
-        for (let j = 0; j < tamanio; j++) {
+        for (let i = 0; i < tamanio; i++) {
+          let tipoValido = false
+          tipoValido = await this.checkTipoArchivo(this, archivo[i])
+          if (!tipoValido) {
+            break
+          }
+          let pesoValido = false
+          pesoValido = await this.checkMaxMb(this, archivo[i])
+          if (!pesoValido) {
+            break
+          }
           let objMod = {}
-          objMod.name = archivo[j].name
+          objMod.name = archivo[i].name
           objMod.isNew = true
-          objMod.archivo = archivo[j]
-          let ex = this.getExtension(archivo[j].name)
+          objMod.archivo = archivo[i]
+          let ex = this.getExtension(archivo[i].name)
           ex = ex.toLowerCase()
           if (ex !== 'jpg' && ex !== 'icon' && ex !== 'jpeg' && ex !== 'png' && ex !== 'gif') {
             if (Extenciones[ex] != null) {
@@ -546,14 +570,24 @@ export default {
               objMod.url = Extenciones['null']
             }
           } else {
-            objMod.url = URL.createObjectURL(archivo[j])
+            objMod.url = URL.createObjectURL(archivo[i])
           }
           this.modelo.push(objMod)
-          if (j === tamanio - 1) {
+          if (i === tamanio - 1) {
             this.$emit('input', this.modelo)
           }
         }
       } else {
+        let tipoValidoSingle = false
+        tipoValidoSingle = await this.checkTipoArchivo(this, archivo[0])
+        if (!tipoValidoSingle) {
+          return
+        }
+        let pesoValidoSingle = false
+        pesoValidoSingle = await this.checkMaxMb(this, archivo[0])
+        if (!pesoValidoSingle) {
+          return
+        }
         const objModelo = {}
         objModelo.name = archivo[0].name
         objModelo.isNew = true
@@ -569,7 +603,7 @@ export default {
         } else {
           objModelo.url = URL.createObjectURL(archivo[0])
         }
-        this.modelo = objModelo
+        this.modelo = { ...objModelo }
         this.$emit('input', this.modelo)
       }
     },

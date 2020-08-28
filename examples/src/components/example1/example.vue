@@ -22,7 +22,7 @@
       <dv-file-upload-btn
         v-if="isButton"
         v-model="modelo"
-        input-accept="image/*"
+        input-accept="application/pdf"
         :is-collections="isMultiple ? true : false" >
         <v-btn
           color="green"
