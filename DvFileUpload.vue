@@ -78,7 +78,6 @@
           :autofocus="autofocus"
           :background-color="background"
           :box="box"
-          :class="(small ? ' input-small ': ' ') + (appendOuterNoMargin ? 'append-outer-no-margin' : ' ' )"
           :color="color"
           :counter="counter"
           :dark="dark"
@@ -101,7 +100,7 @@
           :suffix="suffix"
           validate-on-blur
           readonly
-          class="fileUp"
+          class="fileUp uploadFileReference__text-field"
           style="cursor:pointer;"
           @click="clickHandler()" >
           <template slot="label" >
@@ -159,7 +158,8 @@
         v-if="verMultipleCards"
         xs12
         sm12 >
-        <v-card >
+        <v-card
+          class="uploadFileReference__multiple-cards" >
           <v-layout
             row
             wrap >
@@ -167,7 +167,7 @@
               v-for="(file, index) in modelo"
               :key="index"
               xs3
-              class="pa-1"
+              class="pa-1 uploadFileReference__single-card"
               style="border: solid 1px black !important;" >
               <v-img
                 :src="file.url"
@@ -266,7 +266,15 @@ export default {
       type: String,
       default: 'image'
     },
+    inputAccept: {
+      type: String,
+      default: '*'
+    },
     isCollections: {
+      type: Boolean,
+      default: false
+    },
+    isVertical: {
       type: Boolean,
       default: false
     },
@@ -326,10 +334,6 @@ export default {
       type: Array,
       default: function () { return [] }
     },
-    small: {
-      type: Boolean,
-      default: false
-    },
     solo: {
       type: Boolean,
       default: false
@@ -341,14 +345,6 @@ export default {
     suffix: {
       type: String,
       default: ''
-    },
-    isVertical: {
-      type: Boolean,
-      default: false
-    },
-    inputAccept: {
-      type: String,
-      default: '*'
     }
   },
   data () {

@@ -6,5 +6,7 @@ import './plugins'
 Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(App)
+  render: h => h(App),
+  components: { App },
+  template: '<App/>'
 }).$mount('#app')

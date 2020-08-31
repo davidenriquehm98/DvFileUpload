@@ -39,6 +39,31 @@
             :options="cmOptions" />
         </v-card>
       </v-tab-item>
+      <v-tab ripple >
+        <span class="font-weight-bold text-capitalize" >Sript</span>
+      </v-tab>
+      <v-tab-item>
+        <v-card flat>
+          <v-btn
+            :color="copiado ? 'green' : 'white'"
+            :dark="copiado ? true : false"
+            small
+            absolute
+            top
+            right
+            fab
+            v-clipboard:copy="codeScript"
+            v-clipboard:success="onCopy"
+            v-clipboard:error="onError"
+          >
+            <v-icon>file_copy</v-icon>
+          </v-btn>
+          <codemirror
+            ref="cmScriptE1"
+            :value="codeScript" 
+            :options="scriptOptions" />
+        </v-card>
+      </v-tab-item>
     </v-tabs>
   </div>
 </template>
@@ -54,15 +79,26 @@ export default {
       data: [{ items: [], title: 'Fotos' }],
       copiado: false,
       cmOptions: {
-        tabSize: 4,
+        tabSize: 2,
+        smartIndent: true,
         mode: 'text/x-vue',
         theme: 'monokai',
         lineNumbers: true,
         line: true
       },
+      scriptOptions: {
+        smartIndent: true,
+        tabSize: 2,
+        mode: 'text/javascript',
+        theme: 'dracula',
+        lineNumbers: true,
+        line: true
+      },
       active: null,
       codeTemplate: dedent`<dv-file-upload
-      v-model="modelo" >
+      v-model="modelo"
+      @error="mostrarMensajeError">
+      <template slot="label">
         <span
           class="font-weight-bold green--text" >
           Seleccione un Archivo
@@ -74,21 +110,21 @@ export default {
         </v-icon>
       </template>
     </dv-file-upload>`,
-      codeScript: dedent` <script>
-  export default {
-    data () {
-      return {
-        modelo: null,
-        isButton: 0,
-        isMobile: 0,
-        isAndroid: 0,
-        isMultiple: 0,
-        plataforma: 'web',
-        isVertical: 0
-      }
-    }
-  }
-<\/script>`
+      codeScript: dedent` export default {
+   data () {
+     return {
+       modelo: {
+         name: 'fox.jpg',
+         url: 'https://cdn.pixabay.com/photo/2020/04/14/11/21/fox-5042242_1280.jpg'
+       }
+     }
+   },
+   methods: {
+     mostrarMensajeError (mensaje) {
+       alert(mensaje)
+     }
+   }
+ }`
     }
   },
   methods: {
@@ -100,6 +136,7 @@ export default {
     async refreshAll () {
       await this.$sleep(150)
       this.$refs.cmTemplateE1.refresh()
+      this.$refs.cmScriptE1.refresh()
     },
     async onCopy () {
       this.copiado = true
