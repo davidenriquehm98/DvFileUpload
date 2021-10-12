@@ -424,6 +424,10 @@ export default {
     }
     this.img64Default = defaultImages[this.imgDefault]
     this.previewUrl = this.img64Default
+    if (this.isCollections) {
+      this.verMiniatura = false
+      this.verMultipleCards = true
+    }
   },
   mounted () {
     this.previewHandler()
@@ -481,8 +485,12 @@ export default {
     },
     previewHandler () {
       if (this.modelo != null && (this.modelo.url != null || (this.modelo.length && this.modelo.length === 1))) {
-        this.verMiniatura = true
-        this.verMultipleCards = false
+        if (!this.isCollections) {
+          this.verMiniatura = true
+          this.verMultipleCards = false
+        } else {
+          this.verMultipleCards = true
+        }
         if (this.modelo.url != null) {
           this.setMiniatura(this.modelo)
         } else if (this.modelo.length) {
@@ -630,6 +638,9 @@ export default {
       this.modelo.splice(index, 1)
       this.$emit('input', this.modelo)
       this.$forceUpdate()
+      if (!this.modelo.length) {
+        this.limpiar()
+      }
     },
     async usarCamara () {
       if (Plugins.Camera) {
@@ -695,7 +706,12 @@ export default {
       }
       this.$emit('clear')
       let obj = { name: null, url: urlImg ? urlImg : this.img64Default, isCleared: true }
-      this.modelo = obj
+      if (this.isCollections) {
+        this.modelo = []
+        this.setMiniatura(obj)
+      } else {
+        this.modelo = obj
+      }
       this.resetValidation()
       this.$emit('input', this.modelo)
     }
