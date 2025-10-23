@@ -1,2 +1,5 @@
 # DvFileUpload
 Componente de Selección de  Archivos basado en vue y vuetify 1.5.x, soporte para aplicaciones generadas en Cordova
+
+# Install
+Utilizar Node Version 16 (v16.20.1)
